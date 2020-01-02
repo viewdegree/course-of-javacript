@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title></title>
+		<style type="text/css">
+			
+		</style>
+	</head>
+	<body>
+		<p>ajax用get请求数据</p>
+		<input type="submit" id="btn" >
+		<p>ajax用post请求数据</p>
+		<input type="submit" id="btn1" >
+		
+		
+		<script type="text/javascript">
+			// get的请求方式
+			var xhr = new XMLHttpRequest();
+			var btn = document.getElementById("btn");
+			
+			btn.onclick = function(){
+				xhr.open('get','https://baidu.com?user=admin&password=123',true);
+				xhr.send(null);
+			}
+			// 接受情况
+			xhr.onreadystatechange = function(){
+				if(xhr.readyState === 4){//表示数据完全接受完毕
+					if(xhr.status>=200&&xhr.status<=300||xhr.status===304){//表示返回页面的状态是正常页面
+						consoel.log(xhr.responseText);//服务器返回响应信息
+					}
+				}
+			}
+			
+			// post的请求方式
+			var xhr1 = new XMLHttpRequest();
+			var btn1 = document.getElementById("btn1");
+			
+			btn1.onclick = function(){
+				console.log(1)
+				xhr.open('post','https://baidu.com',true);
+				//设置请求头
+				xhr.setRequestHeader('content-type','application/x-www-form-urlencoded');
+				xhr.send('user=heaven');
+			}
+			// 接受情况
+			xhr1.onreadystatechange = function(){
+				if(xhr.readyState === 4){//表示数据完全接受完毕
+					if(xhr.status>=200&&xhr.status<=300||xhr.status===304){//表示返回页面的状态是正常页面
+						consoel.log(xhr.responseText);//服务器返回响应信息
+					}
+				}
+			}
+		</script>
+	</body>
+</html>
