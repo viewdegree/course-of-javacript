@@ -10,21 +10,33 @@
 	</head>
 	<body>
 		 <script type="text/javascript">
-		 	ajax({
-				url: 'http://baidu.com',
-				method: 'GET',
-				data: {
-					"name": 'viewdegree',
-					"age": 18
+		 // 	ajax({
+			// 	url: 'http://baidu.com',
+			// 	method: 'GET',
+			// 	data: {
+			// 		"name": 'viewdegree',
+			// 		"age": 18
+			// 	},
+			// 	success: function(data){
+			// 		console.log(data)//服务器返回响应信息
+			// 	},
+			// 	error: function(state){
+			// 		console.log(data)//服务器返回状态信息
+			// 	} 
+			// })
+			ajax({
+				method : 'GET', 
+				url : 'https://api.wulv5.com/music/search',
+				data : {
+					keywords : '坂本龙一'
 				},
-				success: function(data){
-					console.log(data)//服务器返回响应信息
+				success : function(msg){
+					console.log(JSON.parse(msg))//json序列化,将字符串转化为对象
 				},
-				error: function(state){
-					console.log(data)//服务器返回状态信息
-				} 
+				error : function(err){
+					console.log(err)
+				}
 			})
-			
 			
 			function ajax(json){
 				if(json.url===undefined){
@@ -39,9 +51,9 @@
 					for(var key in data){
 						arr.push(key+'='+data[key])
 					}
-					return arr.join(&);
+					return arr.join('&');
 				}
-				swith(method){
+				switch(method){
 					case 'GET':
 						xhr.open('GET',url+'?'+jsonUrl(data),true);
 						xhr.send(null);
