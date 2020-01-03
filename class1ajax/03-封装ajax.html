@@ -5,10 +5,23 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<title></title>
 		<style type="text/css">
-			
+			#table{
+				margin: auto;
+				transform: translateX(50px);
+			}
+			tr,td,th{
+				width: 200px;
+			}
 		</style>
 	</head>
 	<body>
+		<table border="1" cellspacing="0" cellpadding="0" id="table">
+			<tr>
+				<th>id</th>
+				<th>曲名</th>
+				<th>作者</th>
+			</tr>
+		</table>
 		 <script type="text/javascript">
 		 // 	ajax({
 			// 	url: 'http://baidu.com',
@@ -31,7 +44,25 @@
 					keywords : '坂本龙一'
 				},
 				success : function(msg){
-					console.log(JSON.parse(msg))//json序列化,将字符串转化为对象
+					var table = document.getElementById("table");
+					var song = msg.result.songs;
+					var f = document.createDocumentFragment();//文档碎片
+					song.forEach(function(v){
+						let tr = document.createElement('tr');
+						let td1 = document.createElement('td');
+						td1.innerHTML = v.id;
+						let td2 = document.createElement('td');
+						td2.innerHTML = v.name;
+						let td3 = document.createElement('td');
+						td3.innerHTML = v.artists.map(function(n){
+							return n.name;
+						});
+						tr.appendChild(td1)
+						tr.appendChild(td2)
+						tr.appendChild(td3)
+						f.appendChild(tr)
+					});
+					table.appendChild(f);
 				},
 				error : function(err){
 					console.log(err)
@@ -67,7 +98,7 @@
 				xhr.onreadystatechange = function(){
 					if(xhr.readyState === 4){//表示数据完全接受完毕
 						if(xhr.status>=200&&xhr.status<=300||xhr.status===304){//表示返回页面的状态是正常页面
-							json.success(xhr.responseText);
+							json.success(JSON.parse(xhr.responseText));//json序列化,将字符串转化为对象
 						}else{
 							json.error(xhr.status);
 						}
