@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<style>
+			#table{
+				margin: auto;
+				transform: translateX(50px);
+			}
+			tr,td,th{
+				width: 200px;
+			}
+		</style>
+		<title>jq的ajax的用法</title>
+	</head>
+	<body>
+		<table border="1" cellspacing="0" cellpadding="0" id="table">
+			<tr>
+				<th>id</th>
+				<th>曲名</th>
+				<th>作者</th>
+			</tr>
+		</table>
+		<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js"></script>
+		<script type="text/javascript">
+			// console.log($)检测jq是否导入
+			$.ajax({
+				type : 'GET', 
+				url : 'https://api.wulv5.com/music/search',
+				data : {
+					keywords : '坂本龙一'
+				},
+				success : function(msg){
+					tableData(msg)
+				},
+				error : function(err){
+					console.log(err)
+				}
+			})
+			function tableData(msg){
+				var table = document.getElementById("table");
+				var song = msg.result.songs;
+				var f = document.createDocumentFragment();//文档碎片
+				song.forEach(function(v){
+					let tr = document.createElement('tr');
+					let td1 = document.createElement('td');
+					td1.innerHTML = v.id;
+					let td2 = document.createElement('td');
+					td2.innerHTML = v.name;
+					let td3 = document.createElement('td');
+					td3.innerHTML = v.artists.map(function(n){
+						return n.name;
+					});
+					tr.appendChild(td1)
+					tr.appendChild(td2)
+					tr.appendChild(td3)
+					f.appendChild(tr)
+				});
+				table.appendChild(f);
+			}
+		</script>
+	</body>
+</html>
