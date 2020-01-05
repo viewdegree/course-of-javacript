@@ -39,6 +39,10 @@
 				padding: 5px;
 				line-height: 20px;
 			}
+			#smartWords li>a{
+				display: block;
+				width: 100%;
+			}
 			#smartWords li:hover{
 				background: #eee;
 			}
@@ -71,6 +75,9 @@
 			 *2.设置参数data,使之能够传入参数
 			 *3.获取json数组中的g->q的值
 			 *4.将获取的值写入smartWords里面
+			 *5.给a标签添加对应的跳转链接
+			 * 5.1 通过百度的get请求链接的特点,构建链接
+			 * 5.2将构建的链接置入到对应的a标签的href中
 			*/
 		    function jsonpFn(data){
 				var g = data.g;
@@ -79,12 +86,11 @@
 				g && g.forEach(//g必须在不为undefiend的情况下可以
 					(v)=>{
 						console.log(v.q)
-						html += `<li><a>${v.q}</a></li>`
+						html += `<li><a href='https://www.baidu.com/s?wd=${v.q}' target='_blank'>${v.q}</a></li>`
 					}
 				)
-				smartWords.innerHTML = html;
+				smartWords.innerHTML = html; //直接替换无需拼接
 			}
-			
 		</script>
 	</body>
 </html>
