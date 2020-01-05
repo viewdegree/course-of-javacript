@@ -43,7 +43,7 @@
 				display: block;
 				width: 100%;
 			}
-			#smartWords li:hover{
+			#smartWords li:hover,#smartWords li.word-s{
 				background: #eee;
 			}
 		</style>
@@ -51,12 +51,13 @@
 	<body>
 		<div id="wrap">
 			<input type="text" id="search">
-			<ul id="smartWords">
+			<ul id="smartWords" tabindex="1">
 			</ul>
 		</div>
 		<script type="text/javascript">
 			var search = document.getElementById("search");
-			var smartWords = document.getElementById("smartWords")
+			var smartWords = document.getElementById("smartWords");
+			var mark = null;	//标记变量需要放在全局里面不能放在事件里面,不然会重新赋值为null,在此案例中注意初始状态不能为0
 			/* Todolist1 
 			*1. 获取每次用户输入的input.value值
 			*2. 通过jsonp去查询关键词位input.value的联想词
@@ -91,6 +92,59 @@
 				)
 				smartWords.innerHTML = html; //直接替换无需拼接
 			}
+			/*Todlist3 监听键盘事件方向键,使之能够移动选则
+			* 1.添加选择器类名
+			* 2.监听键盘事件来控制选择器的类名
+			* 3.监听回车键的时候来跳转选中的链接
+			* 
+			* 
+			*/
+		    search.onkeydown= function(event){
+			   var e = event || window.event || arguments.callee.caller.arguments[0];
+			   var words = smartWords.getElementsByTagName('li');
+			   var len = words.length;
+			   
+			   if(e && e.keyCode==38 && len ){ // 按 Up 
+					e.preventDefault();//阻止input的默认事件按键盘方向键的上键 光标会移动到最前面 怎么阻止光标这个事件效果
+				   //要做的事情
+				   if(mark>0&&mark<len){// 如果markPre不为0的情况
+						words[mark].classList.remove('word-s');
+						mark -= 1;
+						words[mark].classList.add('word-s');
+				   }else{
+						if(mark===null){//为开始的情况
+							mark = len-1;
+							words[mark].classList.add('word-s');
+						}else{//对于为0的情况,则复原为初始状态
+							words[mark].classList.remove('word-s');
+							mark = null;
+						}
+				   }
+				 }
+			   if(e && e.keyCode===40 && len){ // 按 Down 
+				//不可以将word是否为undefined作为判断条件,因为words里面就算没有li他还是一个dom对象
+					e.preventDefault();
+				
+					if(mark>0 && mark<len-1 || mark===0){// 如果markPre不为0的情况,这里的mark为null的时候可能会出现隐式转换,==0,所以不能直接写mark>=0
+						words[mark].classList.remove('word-s');
+						mark += 1;
+						words[mark].classList.add('word-s');
+					}else{
+						if(mark===null){//为状态初始的时候情况
+							mark = 0;
+							words[mark].classList.add('word-s');
+						}else{//对于mark=len-1
+							words[mark].classList.remove('word-s');
+							mark = null;
+						}
+					}
+				  }            
+				if(e && e.keyCode==13){ // enter 键
+					e.preventDefault();
+					//要做的事情
+					console.log('enter');
+			   }
+		    }; 
 		</script>
 	</body>
 </html>
