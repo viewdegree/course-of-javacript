@@ -29,6 +29,7 @@
 				outline: none;				
 			}
 			#smartWords{
+				width: 100%;
 				list-style: none;
 				font-family: sans-serif;
 				font-size: 12px;
@@ -36,12 +37,13 @@
 			}
 			#smartWords li{
 				width: 100%;
-				padding: 5px;
 				line-height: 20px;
+				padding: 5px 0;
 			}
 			#smartWords li>a{
 				display: block;
 				width: 100%;
+				text-indent: 1em;  /* 缩进1个字符*/
 			}
 			#smartWords li:hover,#smartWords li.word-s{
 				background: #eee;
@@ -58,6 +60,8 @@
 			var search = document.getElementById("search");
 			var smartWords = document.getElementById("smartWords");
 			var mark = null;	//标记变量需要放在全局里面不能放在事件里面,不然会重新赋值为null,在此案例中注意初始状态不能为0
+			var orginValue = null;
+			var aValue = [];
 			/* Todolist1 
 			*1. 获取每次用户输入的input.value值
 			*2. 通过jsonp去查询关键词位input.value的联想词
@@ -66,6 +70,7 @@
 			*/
 			search.oninput = function(){
 				var value = this.value;
+				orginValue = value;
 				var url = `https://www.baidu.com/sugrec?prod=pc&wd=${value}&cb=jsonpFn`
 				var script = document.createElement('script')
 				script.src = url;
@@ -81,13 +86,15 @@
 			 * 5.2将构建的链接置入到对应的a标签的href中
 			*/
 		    function jsonpFn(data){
+				aValue = [];
 				var g = data.g;
 				var html = '';
 				// 在拼接字符串的时候如果一次不行那就两次
 				g && g.forEach(//g必须在不为undefiend的情况下可以
 					(v)=>{
-						console.log(v.q)
+						// console.log(v.q)
 						html += `<li><a href='https://www.baidu.com/s?wd=${v.q}' target='_blank'>${v.q}</a></li>`
+						aValue.push(v.q);//将查询的数据存入数组之中
 					}
 				)
 				smartWords.innerHTML = html; //直接替换无需拼接
@@ -96,32 +103,33 @@
 			* 1.添加选择器类名
 			* 2.监听键盘事件来控制选择器的类名
 			* 3.监听回车键的时候来跳转选中的链接
-			* 
-			* 
 			*/
 		    search.onkeydown= function(event){
-			   var e = event || window.event || arguments.callee.caller.arguments[0];
-			   var words = smartWords.getElementsByTagName('li');
-			   var len = words.length;
+				var e = event || window.event || arguments.callee.caller.arguments[0];
+				var words = smartWords.getElementsByTagName('li');
+				var len = words.length;
 			   
-			   if(e && e.keyCode==38 && len ){ // 按 Up 
+				if(e && e.keyCode==38 && len ){ // 按 Up 
 					e.preventDefault();//阻止input的默认事件按键盘方向键的上键 光标会移动到最前面 怎么阻止光标这个事件效果
 				   //要做的事情
 				   if(mark>0&&mark<len){// 如果markPre不为0的情况
 						words[mark].classList.remove('word-s');
 						mark -= 1;
 						words[mark].classList.add('word-s');
+						replaceValue(aValue[mark])
 				   }else{
 						if(mark===null){//为开始的情况
 							mark = len-1;
 							words[mark].classList.add('word-s');
+							replaceValue(aValue[mark])
 						}else{//对于为0的情况,则复原为初始状态
 							words[mark].classList.remove('word-s');
 							mark = null;
+							replaceValue(orginValue)
 						}
 				   }
 				 }
-			   if(e && e.keyCode===40 && len){ // 按 Down 
+				if(e && e.keyCode===40 && len){ // 按 Down 
 				//不可以将word是否为undefined作为判断条件,因为words里面就算没有li他还是一个dom对象
 					e.preventDefault();
 				
@@ -129,22 +137,45 @@
 						words[mark].classList.remove('word-s');
 						mark += 1;
 						words[mark].classList.add('word-s');
+						replaceValue(aValue[mark])
 					}else{
 						if(mark===null){//为状态初始的时候情况
 							mark = 0;
 							words[mark].classList.add('word-s');
+							replaceValue(aValue[mark])
 						}else{//对于mark=len-1
 							words[mark].classList.remove('word-s');
 							mark = null;
+							replaceValue(orginValue)
 						}
 					}
 				  }            
-				if(e && e.keyCode==13){ // enter 键
+				if(e && e.keyCode==13){ // 按enter 键
+					var hrefElem = smartWords.getElementsByClassName('word-s')[0];
 					e.preventDefault();
 					//要做的事情
 					console.log('enter');
+					hrefElem && function(){
+						var href = hrefElem.getElementsByTagName('a')[0].href;
+						window.open(href) 
+					}()
+					
 			   }
-		    }; 
+				
+			};
+			/*Todolist4 当搜索框失去焦点的时候触发的事件
+			* 1. 将标记变量置为null初始状态
+			*/ 
+			search.onblur = function(){
+				mark = null;
+			}
+			/*Todolist5 创建函数就是在选择的时候会替代vaule值
+			* 1. 将value值转化为参数1(string)
+			* 2. 将当前初始的搜索字符串转换为目标的字符串
+			*/ 
+		   function replaceValue(str1){
+			   search.value = str1;
+		   }
 		</script>
 	</body>
 </html>
