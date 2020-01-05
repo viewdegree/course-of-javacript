@@ -74,13 +74,15 @@
 			*/
 		    function jsonpFn(data){
 				var g = data.g;
+				var html = '';
+				// 在拼接字符串的时候如果一次不行那就两次
 				g && g.forEach(//g必须在不为undefiend的情况下可以
 					(v)=>{
 						console.log(v.q)
-						smartWords.innerHTML += `<li><a>${v.q}</a></li>`
+						html += `<li><a>${v.q}</a></li>`
 					}
 				)
-				
+				smartWords.innerHTML = html;
 			}
 			
 		</script>
